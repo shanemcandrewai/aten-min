@@ -1,9 +1,9 @@
 # aten_min
-CMakeLists.txt for a minimal pytorch at::Tensor example
+CMakeLists.txt for a minimal PyTorch at::Tensor example
 
 ## Goal
 
-Develop a CMakeLists.txt to  manage the building of a simple C++ program based on the ATen tensor library and the relevant source files (without pre-built libraries) from [PyTorch 1.6](https://github.com/pytorch/pytorch/tree/1.6)
+Develop a CMakeLists.txt to manage the building of a simple C++ program based on the ATen tensor library and the relevant source files (without pre-built libraries) from [PyTorch 1.6](https://github.com/pytorch/pytorch/tree/1.6)
 
 ## Simple C++ program : `aten_min.cpp` taken from [PYTORCH C++ API](https://pytorch.org/cppdocs/)
 
