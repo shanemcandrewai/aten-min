@@ -12,7 +12,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # add the executable
 add_executable(aten_min aten_min.cpp)
 
-configure_file(${PYTORCH_SRC_DIR}/cmake/Codegen.cmake)
+cmake_policy(SET CMP0076 NEW)
+configure_file(${PYTORCH_SRC_DIR}/cmake/Codegen.cmake ${PYTORCH_SRC_DIR}/cmake/Codegen2.cmake COPYONLY)
 
 target_include_directories(aten_min PUBLIC ${PYTORCH_SRC_DIR}/)
 target_include_directories(aten_min PUBLIC ${PYTORCH_SRC_DIR}/build)
