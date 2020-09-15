@@ -13,7 +13,24 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_executable(aten_min aten_min.cpp)
 
 cmake_policy(SET CMP0076 NEW)
-configure_file(${PYTORCH_SRC_DIR}/cmake/Codegen.cmake ${PYTORCH_SRC_DIR}/cmake/Codegen2.cmake COPYONLY)
+
+file(WRITE prep_aten.cmake "
+file(READ ${PYTORCH_SRC_DIR}/cmake/Codegen.cmake codegen_src)
+string(REPLACE \"--output-dependencies\" \" \" codegen_src $\{codegen_src})
+file(WRITE ${PYTORCH_SRC_DIR}/cmake/Codegen.cmake $\{codegen_src})")
+
+file(WRITE pytorch_deep_clean.cmake "
+find_package(Git)
+if(Git_FOUND)
+  execute_process(COMMAND $\{GIT_EXECUTABLE} restore :/ WORKING_DIRECTORY ${PYTORCH_SRC_DIR})
+  execute_process(COMMAND $\{GIT_EXECUTABLE} clean -dfx WORKING_DIRECTORY ${PYTORCH_SRC_DIR})
+endif()
+file(READ ${PYTORCH_SRC_DIR}/cmake/Codegen.cmake codegen_src)
+string(REPLACE \"--output-dependencies\" \" \" codegen_src $\{codegen_src})
+file(WRITE ${PYTORCH_SRC_DIR}/cmake/Codegen.cmake $\{codegen_src})")
+
+add_custom_target(prep_aten COMMAND ${CMAKE_COMMAND} -P prep_aten.cmake)
+add_custom_target(pytorch_deep_clean COMMAND ${CMAKE_COMMAND} -P pytorch_deep_clean.cmake)
 
 target_include_directories(aten_min PUBLIC ${PYTORCH_SRC_DIR}/)
 target_include_directories(aten_min PUBLIC ${PYTORCH_SRC_DIR}/build)
