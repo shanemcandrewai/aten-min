@@ -18,3 +18,11 @@ Develop a CMakeLists.txt to manage the building of a simple C++ program based on
 1. Clone [PyTorch 1.6](https://github.com/pytorch/pytorch/tree/1.6) and adjust the [CMakeLists.txt](CMakeLists.txt) variable `PYTORCH_SRC_DIR` to point to the local repository, for example `set(PYTORCH_SRC_DIR ../pytorch)`
 
 2. Install the [PyTorch prerequisites](https://github.com/pytorch/pytorch/tree/1.6#from-source)
+
+## Execuation
+
+    aten_min>cmake -S . -B build
+
+### redirect output to file
+
+    aten_min>cmake -S . -B build > cm_out.txt 2>&1
