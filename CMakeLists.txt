@@ -24,13 +24,17 @@ endif()
 
 if(PREP_PYTORCH)
   file(READ ${PYTORCH_SRC_DIR}/cmake/Dependencies.cmake FILE_CONTENTS)
-  string(REPLACE "add_subdirectory($\{CMAKE_SOURCE_DIR}/" "add_subdirectory(" FILE_CONTENTS ${FILE_CONTENTS})
+  string(REPLACE "$\{CMAKE_SOURCE_DIR}" "$\{CMAKE_CURRENT_SOURCE_DIR}" FILE_CONTENTS ${FILE_CONTENTS})
   file(WRITE ${PYTORCH_SRC_DIR}/cmake/Dependencies.cmake ${FILE_CONTENTS})
 
   file(READ ${PYTORCH_SRC_DIR}/cmake/Codegen.cmake FILE_CONTENTS)
-  string(REPLACE "$\{CMAKE_SOURCE_DIR}/" "" FILE_CONTENTS ${FILE_CONTENTS})
-  string(REPLACE "$\{CMAKE_BINARY_DIR}/caffe2/build_variables.bzl" "../../build/caffe2/build_variables.bzl" FILE_CONTENTS ${FILE_CONTENTS})
+  string(REPLACE "$\{CMAKE_SOURCE_DIR}" "$\{CMAKE_SOURCE_DIR}/$\{PYTORCH_SRC_DIR}" FILE_CONTENTS ${FILE_CONTENTS})
   file(WRITE ${PYTORCH_SRC_DIR}/cmake/Codegen.cmake ${FILE_CONTENTS})
+
+#  file(READ ${PYTORCH_SRC_DIR}/cmake/Codegen.cmake FILE_CONTENTS)
+#  string(REPLACE "$\{CMAKE_SOURCE_DIR}/" "" FILE_CONTENTS ${FILE_CONTENTS})
+#  string(REPLACE "$\{CMAKE_BINARY_DIR}/caffe2/build_variables.bzl" "../../build/caffe2/build_variables.bzl" FILE_CONTENTS ${FILE_CONTENTS})
+#  file(WRITE ${PYTORCH_SRC_DIR}/cmake/Codegen.cmake ${FILE_CONTENTS})
 endif()
 
 # add the executable
