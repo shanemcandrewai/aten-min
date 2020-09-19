@@ -19,10 +19,18 @@ Develop a CMakeLists.txt to manage the building of a simple C++ program based on
 
 2. Install the [PyTorch prerequisites](https://github.com/pytorch/pytorch/tree/1.6#from-source)
 
-## Execuation
+## Generate the project buildsystem
 
-    aten_min>cmake -S . -B build
+    cmake -S . -B build
 
-### redirect output to file
+### clean first and redirect output to file
 
-    aten_min>cmake -S . -B build > cm_out.txt 2>&1
+    git clean -df && cmake -S . -B build > cm_out.txt 2>&1
+
+## Build the project
+
+    cmake --build build
+
+### Redirect output to file
+
+    cmake --build build > cm_out.txt 2>&1
