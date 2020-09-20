@@ -22,7 +22,7 @@ Develop a CMakeLists.txt to manage the building of a simple C++ program based on
 ## Generate the project buildsystem and redirect output to file
 ### Option RESET
 
-This restores and cleans the PyTorch source working tree from index without using standard ignore rules. Next it changes some of the CMake scripts to allow building as a suddirectory. This can be disabled by passing the option DRESET=0.
+This restores and cleans the PyTorch source working tree from index without using standard ignore rules. Next it changes some of the CMake scripts to allow building as a suddirectory. This can be disabled by passing the option -D RESET=0.
 
 ## Clean, preprocess, generate the project buildsystem and redirect output to file
 
