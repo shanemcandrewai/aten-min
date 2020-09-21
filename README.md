@@ -1,17 +1,16 @@
-# aten_min
-CMakeLists.txt for a minimal PyTorch at::Tensor example
+# PyTorch ATen minimal build example 
 
-## Goal
+This CMakeLists.txt manages the building of a simple C++ program based on the ATen tensor library and the relevant source files (without pre-built libraries) from [PyTorch 1.6](https://github.com/pytorch/pytorch/tree/1.6)
 
-Develop a CMakeLists.txt to manage the building of a simple C++ program based on the ATen tensor library and the relevant source files (without pre-built libraries) from [PyTorch 1.6](https://github.com/pytorch/pytorch/tree/1.6)
-
-## Simple C++ program : `aten_min.cpp` taken from [PYTORCH C++ API](https://pytorch.org/cppdocs/)
+## Simple C++ program : `aten_min.cpp` adapted from [PYTORCH C++ API](https://pytorch.org/cppdocs/)
 
     #include <ATen/ATen.h>
 
-    at::Tensor a = at::ones({2, 2}, at::kInt);
-    at::Tensor b = at::randn({2, 2});
-    auto c = a + b.to(at::kInt);
+    int main() {
+      at::Tensor a = at::ones({2, 2}, at::kInt);
+      at::Tensor b = at::randn({2, 2});
+      auto c = a + b.to(at::kInt);
+    }
 
 ## Prerequisites
 
@@ -19,15 +18,15 @@ Develop a CMakeLists.txt to manage the building of a simple C++ program based on
 
 2. Install the [PyTorch prerequisites](https://github.com/pytorch/pytorch/tree/1.6#from-source)
 
-## Generate the project buildsystem and redirect output to file
-### Option RESET
-
-This restores and cleans the PyTorch source working tree from index without using standard ignore rules. Next it changes some of the CMake scripts to allow building as a suddirectory. This can be disabled by passing the option -D RESET=0.
-
-## Clean, preprocess, generate the project buildsystem and redirect output to file
+## Usage
+### Clean, preprocess, generate the project buildsystem and redirect output to file
 
     rm -rf build && cmake -S . -B build > cm_out.txt 2>&1
 
-## Build the project
+#### Cmake option RESET
+
+This restores and cleans the PyTorch source working tree from index without using standard ignore rules. Next it changes some of the CMake scripts to allow building as a suddirectory. This can be disabled by passing the option -D RESET=0.
+
+### Build the project
 
     cmake --build build

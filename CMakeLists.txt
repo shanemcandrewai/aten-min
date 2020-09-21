@@ -11,6 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 cmake_policy(SET CMP0076 NEW)
 
 option(USE_CUDA "Use CUDA")
+option(USE_DISTRIBUTED "Enables distributed (c10d, gloo, mpi, etc.) build")
+option(BUILD_SHARED_LIBS "Build libcaffe2.so")
 option(RESET "Restore and clean PyTorch source tree" ON)
 
 if(RESET)
@@ -28,6 +30,11 @@ if(RESET)
   string(REPLACE "$\{$\{CMAKE_PROJECT_NAME}_SOURCE_DIR}/" "$\{$\{PROJECT_NAME}_SOURCE_DIR}/" FILE_CONTENTS ${FILE_CONTENTS})
   string(REPLACE "# FIXME: the file/variable name lists cpp, but these list both cpp and .h files" "execute_process(COMMAND $\{GEN_COMMAND} RESULT_VARIABLE RETURN_VALUE)" FILE_CONTENTS ${FILE_CONTENTS})
   file(WRITE ${PYTORCH_SRC_DIR}/cmake/Codegen.cmake ${FILE_CONTENTS})
+
+  file(READ ${PYTORCH_SRC_DIR}/caffe2/core/common.h FILE_CONTENTS)
+  string(REPLACE "#include \"caffe2/core/macros.h\"" "#include \"../build/caffe2/core/macros.h\"" FILE_CONTENTS ${FILE_CONTENTS})
+  file(WRITE ${PYTORCH_SRC_DIR}/caffe2/core/common.h ${FILE_CONTENTS})
+
 endif()
 
 
