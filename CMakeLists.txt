@@ -13,13 +13,13 @@ cmake_policy(SET CMP0076 NEW)
 option(USE_CUDA "Use CUDA")
 option(USE_DISTRIBUTED "Enables distributed (c10d, gloo, mpi, etc.) build")
 option(BUILD_SHARED_LIBS "Build libcaffe2.so")
-option(RESET "Restore and modify PyTorch source tree" ON)
+option(RESET "Restore and modify PyTorch source tree")
 
 if(RESET)
   find_package(Git)
   if(Git_FOUND)
     execute_process(COMMAND ${GIT_EXECUTABLE} restore :/ WORKING_DIRECTORY ${PYTORCH_SRC_DIR})
-#    execute_process(COMMAND ${GIT_EXECUTABLE} clean -dfx WORKING_DIRECTORY ${PYTORCH_SRC_DIR})
+    execute_process(COMMAND ${GIT_EXECUTABLE} clean -df WORKING_DIRECTORY ${PYTORCH_SRC_DIR})
   endif()
   file(READ ${PYTORCH_SRC_DIR}/cmake/Dependencies.cmake FILE_CONTENTS)
   string(REPLACE "$\{CMAKE_SOURCE_DIR}" "$\{CMAKE_SOURCE_DIR}/$\{PYTORCH_SRC_DIR}" FILE_CONTENTS "${FILE_CONTENTS}")
@@ -39,12 +39,14 @@ if(RESET)
   string(REPLACE "--yaml_dir=$\{CMAKE_CURRENT_BINARY_DIR}/../aten/src/ATen" "--yaml_dir=$\{CMAKE_CURRENT_BINARY_DIR}/aten/src/ATen" FILE_CONTENTS "${FILE_CONTENTS}")
   file(WRITE ${PYTORCH_SRC_DIR}/caffe2/CMakeLists.txt "${FILE_CONTENTS}")
 
+  set(RESET OFF CACHE BOOL "Restore and modify PyTorch source tree" FORCE)
+
 endif()
 
+add_subdirectory(${PYTORCH_SRC_DIR})
 
 # add the executable
 add_executable(aten_min aten_min.cpp)
-add_subdirectory(${PYTORCH_SRC_DIR})
 
 target_include_directories(aten_min PUBLIC build)
 target_include_directories(aten_min PUBLIC build/aten/src/)
