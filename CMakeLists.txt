@@ -10,17 +10,29 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 cmake_policy(SET CMP0076 NEW)
 
-option(USE_CUDA "Use CUDA")
-option(USE_DISTRIBUTED "Enables distributed (c10d, gloo, mpi, etc.) build")
-option(BUILD_SHARED_LIBS "Build libcaffe2.so")
+#option(BUILD_SHARED_LIBS "Build libcaffe2.so")
 option(RESET "Restore and modify PyTorch source tree")
+option(DEBUG "will enable debug builds (-g -O0)" ON)
+option(REL_WITH_DEB_INFO "will enable debug symbols with optimizations (-g -O3)" ON)
+option(USE_DISTRIBUTED "will disable distributed (c10d, gloo, mpi, etc.) build.")
+option(USE_MKLDNN "will disable using MKL-DNN.")
+option(USE_CUDA "will disable compiling CUDA (in case you are developing on something not CUDA related), to save compile time.")
+option(BUILD_TEST "will disable building C++ test binaries.")
+option(USE_FBGEMM "will disable using FBGEMM (quantized 8-bit server operators).")
+option(USE_NNPACK "will disable compiling with NNPACK.")
+option(USE_QNNPACK "will disable QNNPACK build (quantized 8-bit operators).")
+option(USE_XNNPACK "will disable compiling with XNNPACK.")
+
+option(BUILD_CAFFE2_OPS "disable build of Caffe2 operators")
+
 
 if(RESET)
   find_package(Git)
+  # Restore PyTorch working tree from HEAD
   if(Git_FOUND)
     execute_process(COMMAND ${GIT_EXECUTABLE} restore :/ WORKING_DIRECTORY ${PYTORCH_SRC_DIR})
-    execute_process(COMMAND ${GIT_EXECUTABLE} clean -df WORKING_DIRECTORY ${PYTORCH_SRC_DIR})
   endif()
+  # Necessary modifications in PyTorch to allow building as a CMake subdirectory
   file(READ ${PYTORCH_SRC_DIR}/cmake/Dependencies.cmake FILE_CONTENTS)
   string(REPLACE "$\{CMAKE_SOURCE_DIR}" "$\{CMAKE_SOURCE_DIR}/$\{PYTORCH_SRC_DIR}" FILE_CONTENTS "${FILE_CONTENTS}")
   file(WRITE ${PYTORCH_SRC_DIR}/cmake/Dependencies.cmake "${FILE_CONTENTS}")
@@ -36,8 +48,12 @@ if(RESET)
   file(WRITE ${PYTORCH_SRC_DIR}/caffe2/core/common.h "${FILE_CONTENTS}")
 
   file(READ ${PYTORCH_SRC_DIR}/caffe2/CMakeLists.txt FILE_CONTENTS)
-  string(REPLACE "--yaml_dir=$\{CMAKE_CURRENT_BINARY_DIR}/../aten/src/ATen" "--yaml_dir=$\{CMAKE_CURRENT_BINARY_DIR}/aten/src/ATen" FILE_CONTENTS "${FILE_CONTENTS}")
+  string(REPLACE "--yaml_dir=$\{CMAKE_CURRENT_BINARY_DIR}/../aten/src/ATen" "--yaml_dir=$\{CMAKE_CURRENT_BINARY_DIR}/../../aten/src/ATen" FILE_CONTENTS "${FILE_CONTENTS}")
   file(WRITE ${PYTORCH_SRC_DIR}/caffe2/CMakeLists.txt "${FILE_CONTENTS}")
+
+  file(READ ${PYTORCH_SRC_DIR}/aten/src/TH/TH.h FILE_CONTENTS)
+  string(REPLACE "<TH/THGeneral.h>" "\"../../build/pytorch/caffe2/aten/src/TH/THGeneral.h\"" FILE_CONTENTS "${FILE_CONTENTS}")
+  file(WRITE ${PYTORCH_SRC_DIR}/aten/src/TH/TH.h "${FILE_CONTENTS}")
 
   set(RESET OFF CACHE BOOL "Restore and modify PyTorch source tree" FORCE)
 
@@ -50,6 +66,7 @@ add_executable(aten_min aten_min.cpp)
 
 target_include_directories(aten_min PUBLIC build)
 target_include_directories(aten_min PUBLIC build/aten/src/)
+target_include_directories(aten_min PUBLIC build/pytorch/caffe2/aten/src/)
 target_include_directories(aten_min PUBLIC ${PYTORCH_SRC_DIR})
 target_include_directories(aten_min PUBLIC ${PYTORCH_SRC_DIR}/aten/src)
 
