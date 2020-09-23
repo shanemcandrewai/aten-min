@@ -51,9 +51,9 @@ if(RESET)
   string(REPLACE "--yaml_dir=$\{CMAKE_CURRENT_BINARY_DIR}/../aten/src/ATen" "--yaml_dir=$\{CMAKE_CURRENT_BINARY_DIR}/../../aten/src/ATen" FILE_CONTENTS "${FILE_CONTENTS}")
   file(WRITE ${PYTORCH_SRC_DIR}/caffe2/CMakeLists.txt "${FILE_CONTENTS}")
 
-  file(READ ${PYTORCH_SRC_DIR}/aten/src/TH/TH.h FILE_CONTENTS)
-  string(REPLACE "<TH/THGeneral.h>" "\"../../build/pytorch/caffe2/aten/src/TH/THGeneral.h\"" FILE_CONTENTS "${FILE_CONTENTS}")
-  file(WRITE ${PYTORCH_SRC_DIR}/aten/src/TH/TH.h "${FILE_CONTENTS}")
+  file(READ ${PYTORCH_SRC_DIR}/torch/lib/libshm/CMakeLists.txt FILE_CONTENTS)
+  string(REPLACE "$\{CMAKE_BINARY_DIR}/caffe2/aten/src # provides <TH/THGeneral.h> to THC.h" "$\{CMAKE_BINARY_DIR}/pytorch/caffe2/aten/src # provides <TH/THGeneral.h> to THC.h" FILE_CONTENTS "${FILE_CONTENTS}")
+  file(WRITE ${PYTORCH_SRC_DIR}/torch/lib/libshm/CMakeLists.txt "${FILE_CONTENTS}")
 
   set(RESET OFF CACHE BOOL "Restore and modify PyTorch source tree" FORCE)
 
