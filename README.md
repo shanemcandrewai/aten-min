@@ -21,11 +21,11 @@ This CMakeLists.txt manages the building of a simple C++ program based on the AT
 ## Usage
 ### Clean, preprocess, generate the project buildsystem and redirect output to file
 
-    rm -rf build && cmake -S . -B build > cm_out.txt 2>&1
+    rm -rf build && cmake -DRESET=1 -S . -B build > cm_out.txt 2>&1
 
 #### Cmake option RESET
 
-This restores and cleans the PyTorch source working tree from index without using standard ignore rules. Next it changes some of the CMake scripts to allow building as a suddirectory. This can be disabled by passing the option -D RESET=0.
+This restores the PyTorch source working tree from HEAD and changes some of the CMake scripts and header files to allow building as a suddirectory. This can be enabled by passing the option `-D RESET=1`.
 
 ### Build the project
 
