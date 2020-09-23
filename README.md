@@ -19,7 +19,7 @@ This CMakeLists.txt manages the building of a simple C++ program based on the AT
 2. Install the [PyTorch prerequisites](https://github.com/pytorch/pytorch/tree/1.6#from-source)
 
 ## Usage
-### Clean, preprocess, generate the project buildsystem and redirect output to file
+### Restore, preprocess, generate the project buildsystem and redirect output to file
 
     rm -rf build && cmake -DRESET=1 -S . -B build > cm_out.txt 2>&1
 
