@@ -23,7 +23,7 @@ option(USE_NNPACK "will disable compiling with NNPACK.")
 option(USE_QNNPACK "will disable QNNPACK build (quantized 8-bit operators).")
 option(USE_XNNPACK "will disable compiling with XNNPACK.")
 
-option(BUILD_CAFFE2_OPS "disable build of Caffe2 operators")
+#option(BUILD_CAFFE2_OPS "disable build of Caffe2 operators")
 
 
 if(RESET)
@@ -54,6 +54,10 @@ if(RESET)
   file(READ ${PYTORCH_SRC_DIR}/torch/lib/libshm/CMakeLists.txt FILE_CONTENTS)
   string(REPLACE "$\{CMAKE_BINARY_DIR}/caffe2/aten/src # provides <TH/THGeneral.h> to THC.h" "$\{CMAKE_BINARY_DIR}/pytorch/caffe2/aten/src # provides <TH/THGeneral.h> to THC.h" FILE_CONTENTS "${FILE_CONTENTS}")
   file(WRITE ${PYTORCH_SRC_DIR}/torch/lib/libshm/CMakeLists.txt "${FILE_CONTENTS}")
+
+  file(READ ${PYTORCH_SRC_DIR}/modules/observers/CMakeLists.txt FILE_CONTENTS)
+  string(REPLACE "target_include_directories(caffe2_observers PUBLIC $\{CMAKE_CURRENT_SOURCE_DIR}/..)" "target_include_directories(caffe2_observers PUBLIC $\{CMAKE_CURRENT_SOURCE_DIR}/.. PUBLIC $\{CMAKE_BINARY_DIR}/aten/src)" FILE_CONTENTS "${FILE_CONTENTS}")
+  file(WRITE ${PYTORCH_SRC_DIR}/modules/observers/CMakeLists.txt "${FILE_CONTENTS}")
 
   set(RESET OFF CACHE BOOL "Restore and modify PyTorch source tree" FORCE)
 
