@@ -30,3 +30,7 @@ This restores the PyTorch source working tree from HEAD and changes some of the 
 ### Build the project
 
     cmake --build build
+
+### Execute
+
+    ./build/aten_min
