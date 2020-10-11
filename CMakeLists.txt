@@ -1,30 +1,25 @@
 cmake_minimum_required(VERSION 3.10)
 
-# set the project name
 project(aten_min)
 
-set(PYTORCH_SRC_DIR pytorch)
+set(PYTORCH_SRC_DIR ../pytorch)
 
-# specify the C++ standard
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-cmake_policy(SET CMP0076 NEW)
 
-#option(BUILD_SHARED_LIBS "Build libcaffe2.so")
+include(CMakeDependentOption)
 option(RESET "Restore and modify PyTorch source tree")
-option(DEBUG "will enable debug builds (-g -O0)" ON)
-option(REL_WITH_DEB_INFO "will enable debug symbols with optimizations (-g -O3)" ON)
-option(USE_DISTRIBUTED "will disable distributed (c10d, gloo, mpi, etc.) build.")
-option(USE_MKLDNN "will disable using MKL-DNN.")
-option(USE_CUDA "will disable compiling CUDA (in case you are developing on something not CUDA related), to save compile time.")
-option(BUILD_TEST "will disable building C++ test binaries.")
-option(USE_FBGEMM "will disable using FBGEMM (quantized 8-bit server operators).")
-option(USE_NNPACK "will disable compiling with NNPACK.")
-option(USE_QNNPACK "will disable QNNPACK build (quantized 8-bit operators).")
-option(USE_XNNPACK "will disable compiling with XNNPACK.")
-
-#option(BUILD_CAFFE2_OPS "disable build of Caffe2 operators")
-
+CMAKE_DEPENDENT_OPTION(NO_BUILD_SHARED_LIBS "Do not build shared libraries" OFF RESET ON)
+option(USE_CUDA "disable compiling CUDA, to save compile time")
+option(USE_DISTRIBUTED "disable distributed (c10d, gloo, mpi, etc.) build")
+option(USE_MKLDNN "disable using MKL-DNN")
+option(USE_FBGEMM "disable using FBGEMM (quantized 8-bit server operators)")
+option(USE_NNPACK "disable compiling with NNPACK")
+option(USE_QNNPACK "disable QNNPACK build (quantized 8-bit operators)")
+option(USE_XNNPACK "disable compiling with XNNPACK")
+option(BUILD_CUSTOM_PROTOBUF "Build and use Caffe2's own protobuf under third_party")
+option(BUILD_PYTHON "Build Python binaries")
+option(BUILD_CAFFE2_OPS "Build Caffe2 operators")
 
 if(RESET)
   find_package(Git)
@@ -32,40 +27,33 @@ if(RESET)
   if(Git_FOUND)
     execute_process(COMMAND ${GIT_EXECUTABLE} restore :/ WORKING_DIRECTORY ${PYTORCH_SRC_DIR})
   endif()
-  # Necessary modifications in PyTorch to allow building as a CMake subdirectory
+
+  if(NO_BUILD_SHARED_LIBS)
+    file(READ ${PYTORCH_SRC_DIR}/CMakeLists.txt FILE_CONTENTS)
+    string(REPLACE "option(BUILD_SHARED_LIBS \"Build libcaffe2.so\" ON)" "option(BUILD_SHARED_LIBS \"Build libcaffe2.so\")" FILE_CONTENTS "${FILE_CONTENTS}")
+    file(WRITE ${PYTORCH_SRC_DIR}/CMakeLists.txt "${FILE_CONTENTS}")
+  endif()
+
   file(READ ${PYTORCH_SRC_DIR}/cmake/Dependencies.cmake FILE_CONTENTS)
-  string(REPLACE "$\{CMAKE_SOURCE_DIR}" "$\{CMAKE_SOURCE_DIR}/$\{PYTORCH_SRC_DIR}" FILE_CONTENTS "${FILE_CONTENTS}")
+  string(REPLACE "add_subdirectory($\{CMAKE_SOURCE_DIR}/third_party/fmt" "add_subdirectory(${PYTORCH_SRC_DIR}/third_party/fmt ${CMAKE_BINARY_DIR}/third_party/fmt" FILE_CONTENTS "${FILE_CONTENTS}")
   file(WRITE ${PYTORCH_SRC_DIR}/cmake/Dependencies.cmake "${FILE_CONTENTS}")
 
   file(READ ${PYTORCH_SRC_DIR}/cmake/Codegen.cmake FILE_CONTENTS)
-  string(REPLACE "$\{CMAKE_SOURCE_DIR}" "$\{CMAKE_SOURCE_DIR}/$\{PYTORCH_SRC_DIR}" FILE_CONTENTS "${FILE_CONTENTS}")
-  string(REPLACE "$\{$\{CMAKE_PROJECT_NAME}_SOURCE_DIR}/" "$\{$\{PROJECT_NAME}_SOURCE_DIR}/" FILE_CONTENTS "${FILE_CONTENTS}")
-  string(REPLACE "# FIXME: the file/variable name lists cpp, but these list both cpp and .h files" "execute_process(COMMAND $\{GEN_COMMAND} RESULT_VARIABLE RETURN_VALUE)" FILE_CONTENTS "${FILE_CONTENTS}")
+  string(REPLACE "set(GEN_COMMAND" "find_package(Python)\n  set(GEN_COMMAND" FILE_CONTENTS "${FILE_CONTENTS}")
+  string(REPLACE "PYTHON_EXECUTABLE" "Python_EXECUTABLE" FILE_CONTENTS "${FILE_CONTENTS}")
+  string(REPLACE "$\{CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/${PYTORCH_SRC_DIR}" FILE_CONTENTS "${FILE_CONTENTS}")
+  string(REPLACE "CMAKE_PROJECT_NAME" "PROJECT_NAME" FILE_CONTENTS "${FILE_CONTENTS}")
   file(WRITE ${PYTORCH_SRC_DIR}/cmake/Codegen.cmake "${FILE_CONTENTS}")
 
   file(READ ${PYTORCH_SRC_DIR}/caffe2/core/common.h FILE_CONTENTS)
-  string(REPLACE "#include \"caffe2/core/macros.h\"" "#include \"../build/caffe2/core/macros.h\"" FILE_CONTENTS "${FILE_CONTENTS}")
+  string(REPLACE "caffe2/core/macros.h" "${CMAKE_BINARY_DIR}/caffe2/core/macros.h" FILE_CONTENTS "${FILE_CONTENTS}")
   file(WRITE ${PYTORCH_SRC_DIR}/caffe2/core/common.h "${FILE_CONTENTS}")
-
-  file(READ ${PYTORCH_SRC_DIR}/caffe2/CMakeLists.txt FILE_CONTENTS)
-  string(REPLACE "--yaml_dir=$\{CMAKE_CURRENT_BINARY_DIR}/../aten/src/ATen" "--yaml_dir=$\{CMAKE_CURRENT_BINARY_DIR}/../../aten/src/ATen" FILE_CONTENTS "${FILE_CONTENTS}")
-  file(WRITE ${PYTORCH_SRC_DIR}/caffe2/CMakeLists.txt "${FILE_CONTENTS}")
-
-  file(READ ${PYTORCH_SRC_DIR}/torch/lib/libshm/CMakeLists.txt FILE_CONTENTS)
-  string(REPLACE "$\{CMAKE_BINARY_DIR}/caffe2/aten/src # provides <TH/THGeneral.h> to THC.h" "$\{CMAKE_BINARY_DIR}/pytorch/caffe2/aten/src # provides <TH/THGeneral.h> to THC.h" FILE_CONTENTS "${FILE_CONTENTS}")
-  file(WRITE ${PYTORCH_SRC_DIR}/torch/lib/libshm/CMakeLists.txt "${FILE_CONTENTS}")
-
-  file(READ ${PYTORCH_SRC_DIR}/modules/CMakeLists.txt FILE_CONTENTS)
-  string(REPLACE "project(modules CXX C)" "project(modules CXX C)\ninclude_directories($\{CMAKE_BINARY_DIR}/aten/src)" FILE_CONTENTS "${FILE_CONTENTS}")
-  file(WRITE ${PYTORCH_SRC_DIR}/modules/CMakeLists.txt "${FILE_CONTENTS}")
-
-  set(RESET OFF CACHE BOOL "Restore and modify PyTorch source tree" FORCE)
-
 endif()
 
-add_subdirectory(${PYTORCH_SRC_DIR})
-
-# add the executable
+add_subdirectory(${PYTORCH_SRC_DIR} ${CMAKE_BINARY_DIR}/pytorch)
+add_library(torch)
+add_library(c10)
+target_link_libraries(aten_min torch c10)
 add_executable(aten_min aten_min.cpp)
 
 target_include_directories(aten_min PUBLIC build)
