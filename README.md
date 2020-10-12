@@ -19,18 +19,26 @@ This CMakeLists.txt manages the building of a simple C++ program based on the AT
 2. Install the [PyTorch prerequisites](https://github.com/pytorch/pytorch/tree/1.6#from-source)
 
 ## Usage
-### Restore, preprocess, generate the project buildsystem and redirect output to file
-
-    rm -rf build && cmake -DRESET=1 -S . -B build > cm_out.txt 2>&1
-
-#### Cmake option RESET
-
-This restores the PyTorch source working tree from HEAD and changes some of the CMake scripts and header files to allow building as a suddirectory. This can be enabled by passing the option `-D RESET=1`.
-
+### Generate the project buildsystem
+    cmake -S . -B build
+#### Cmake options
+##### RESET
+This restores the PyTorch source working tree from HEAD and reapplies the modifications to paths. This can be enabled by passing the option `-D RESET=1`.
+###### NO_BUILD_SHARED_LIBS (dependent on RESET)
+The build generates a shared library by default. This can be disabled by passing the option `-D RESET=1 -D NO_BUILD_SHARED_LIBS=1`.
+##### CMAKE_BUILD_TYPE 
+The default buid type is "Release". For a debug build pass option `-D CMAKE_BUILD_TYPE=Debug`
 ### Build the project
-
     cmake --build build
-
 ### Execute
-
     ./build/aten_min
+### Cleaning / trouble-shooting
+#### Linux
+    rm build/CMakeCache.txt
+    rm -rf build
+#### Windows
+    del build/CMakeCache.txt
+    rmdir /s /q build
+    mklink /d build d:\build
+#### Restore PyTorch source without using standard ignore rules
+    git clean -dfx
