@@ -44,6 +44,7 @@ if(RESET)
   string(REPLACE "PYTHON_EXECUTABLE" "Python_EXECUTABLE" FILE_CONTENTS "${FILE_CONTENTS}")
   string(REPLACE "$\{CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/${PYTORCH_SRC_DIR}" FILE_CONTENTS "${FILE_CONTENTS}")
   string(REPLACE "CMAKE_PROJECT_NAME" "PROJECT_NAME" FILE_CONTENTS "${FILE_CONTENTS}")
+  string(REPLACE "but these list both cpp and .h files" "but these list both cpp and .h files\n  execute_process(COMMAND $\{GEN_COMMAND} RESULT_VARIABLE RETURN_VALUE)" FILE_CONTENTS "${FILE_CONTENTS}")
   file(WRITE ${PYTORCH_SRC_DIR}/cmake/Codegen.cmake "${FILE_CONTENTS}")
 
   file(READ ${PYTORCH_SRC_DIR}/caffe2/core/common.h FILE_CONTENTS)
