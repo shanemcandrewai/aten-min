@@ -34,7 +34,11 @@ The default buid type is `Release`. For a debug build pass option `-D CMAKE_BUIL
     cmake --build build
 ### Execute
     ./build/aten_min
-### Cleaning / trouble-shooting
+### General maintenance and trouble-shooting
+#### Restore PyTorch working tree from HEAD
+    restore :/ 
+#### Clean PyTorch working tree without using standard ignore rules
+    git clean -dfx
 #### Linux
     rm build/CMakeCache.txt
     rm -rf build
@@ -42,5 +46,3 @@ The default buid type is `Release`. For a debug build pass option `-D CMAKE_BUIL
     del build/CMakeCache.txt
     rmdir /s /q build
     mklink /d build d:\build
-#### Restore PyTorch source without using standard ignore rules
-    git clean -dfx
