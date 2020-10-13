@@ -29,6 +29,7 @@ The build generates a shared library by default. This can be disabled by passing
 ##### CMAKE_BUILD_TYPE 
 The default buid type is `Release`. For a debug build pass option `-D CMAKE_BUILD_TYPE=Debug`
 ##### CMAKE_CXX_FLAGS
+###### GCC
 `-Og` enables optimizations that do not interfere with debugging
 ### Build the project
     cmake --build build
