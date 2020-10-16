@@ -18,7 +18,7 @@ option(USE_FBGEMM "disable using FBGEMM (quantized 8-bit server operators)")
 option(USE_NNPACK "disable compiling with NNPACK")
 option(USE_QNNPACK "disable QNNPACK build (quantized 8-bit operators)")
 option(USE_XNNPACK "disable compiling with XNNPACK")
-option(BUILD_CUSTOM_PROTOBUF "Build and use Caffe2's own protobuf under third_party")
+option(BUILD_CUSTOM_PROTOBUF "Build and use Caffe2's own protobuf under third_party" ON)
 option(BUILD_PYTHON "Build Python binaries")
 option(BUILD_CAFFE2_OPS "Build Caffe2 operators")
 
