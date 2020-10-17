@@ -14,7 +14,7 @@ This CMakeLists.txt manages the building of a simple C++ program based on the AT
 
 ## Prerequisites
 
-1. Clone [PyTorch 1.6](https://github.com/pytorch/pytorch/tree/1.6) and adjust the [CMakeLists.txt](CMakeLists.txt) variable `PYTORCH_SRC_DIR` to point to the local repository, for example `set(PYTORCH_SRC_DIR pytorch)`
+1. Clone [PyTorch 1.6](https://github.com/pytorch/pytorch/tree/1.6) and adjust the [CMakeLists.txt](CMakeLists.txt) variable `PYTORCH_SRC_DIR` to point to the local repository, for example `set(PYTORCH_SRC_DIR ../pytorch)`
 
 2. Install the [PyTorch prerequisites](https://github.com/pytorch/pytorch/tree/1.6#from-source)
 
@@ -35,11 +35,7 @@ The default buid type is `Release`. For a debug build pass option `-D CMAKE_BUIL
     cmake --build build
 ### Execute
     ./build/aten_min
-### General maintenance and trouble-shooting
-#### Restore PyTorch working tree from HEAD
-    git restore :/ 
-#### Clean PyTorch working tree without using standard ignore rules
-    git clean -dfx
+### Cleaning / trouble-shooting
 #### Linux
     rm build/CMakeCache.txt
     rm -rf build
@@ -47,3 +43,5 @@ The default buid type is `Release`. For a debug build pass option `-D CMAKE_BUIL
     del build/CMakeCache.txt
     rmdir /s /q build
     mklink /d build d:\build
+#### Clean PyTorch source without using standard ignore rules
+    git clean -dfx

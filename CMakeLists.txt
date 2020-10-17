@@ -24,7 +24,6 @@ option(BUILD_CAFFE2_OPS "Build Caffe2 operators")
 
 if(RESET)
   find_package(Git)
-  # Restore PyTorch working tree from HEAD
   if(Git_FOUND)
     execute_process(COMMAND ${GIT_EXECUTABLE} restore :/ WORKING_DIRECTORY ${PYTORCH_SRC_DIR})
   endif()
