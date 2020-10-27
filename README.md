@@ -17,8 +17,6 @@ This CMakeLists.txt manages the building of a simple C++ program based on the AT
 #### Cmake options
 ##### RESET
 This restores the PyTorch source working tree from HEAD and reapplies the modifications to paths. This can be enabled by passing the option `-D RESET=1`.
-##### BUILD_SHARED_LIBS_OPT
-Macro `C10_BUILD_SHARED_LIBS` is not defined by default. This can be enabled by passing the option `-D BUILD_SHARED_LIBS_OPT=1`.
 ##### USE_STATIC_DISPATCH 
 Macro `USE_STATIC_DISPATCH` is defined by default. This can be disabled by passing the option `-D BUILD_SHARED_LIBS_OPT=0`.
 ##### CMAKE_BUILD_TYPE 
