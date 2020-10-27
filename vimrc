@@ -1,4 +1,4 @@
-"Last modified: 11-09-2020
+"Last change set shiftwidth=2
 source $VIMRUNTIME/defaults.vim
 set showmode
 set ignorecase
@@ -6,7 +6,7 @@ set smartcase "Override ignorecase option if the search contains upper case
 set linebreak 
 set encoding=utf-8
 set noswapfile
-
+"set shiftwidth=2
 inoremap jj <Esc>
 inoremap <C-S> <Esc>:w<CR>
 nnoremap ; :
