@@ -16,9 +16,9 @@ This CMakeLists.txt manages the building of a simple C++ program based on the AT
     cmake -S . -B build
 #### Cmake options
 ##### RESET
-This restores the PyTorch source working tree from HEAD and reapplies the modifications to paths. This can be enabled by passing the option `-D RESET=1`.
+Restores and cleans the PyTorch source working tree from HEAD.
 ##### USE_STATIC_DISPATCH 
-Macro `USE_STATIC_DISPATCH` is defined by default. This can be disabled by passing the option `-D BUILD_SHARED_LIBS_OPT=0`.
+Use static dispatch for ATen operators
 ##### CMAKE_BUILD_TYPE 
 The default buid type is `Release`. For a debug build pass option `-D CMAKE_BUILD_TYPE=Debug`
 ##### CMAKE_CXX_FLAGS
